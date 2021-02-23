@@ -27,8 +27,8 @@ _Modify the following functions_
 
 **gates\_needed(departures: List\[float\], arrivals: List\[float\]) -> int**
 
-*   **departures: List\[int\]**: A python list of floats containing departure times of flights at the airport
-*   **arrivals: List\[int\]**: A python list of floats containing arrival times of flights at the airport
+*   **departures: List\[float\]**: A python list of floats containing departure times of flights at the airport
+*   **arrivals: List\[float\]**: A python list of floats containing arrival times of flights at the airport
 *   **Return:** An integer that represents the maximum number of gates needed at any point during the day of these departures and arrivals
 *   **Time Complexity:** O(n + m), where n is the length of departures and m is the length of arrivals
 *   **Space Complexity:** O(n + m)
@@ -42,6 +42,8 @@ _Modify the following functions_
 #### **Notes**
 
 *   You may **_NOT_** have more than max(len(departures), len(arrivals)) in any structure you create at any given time.  Think about what kind of data structure may be useful to solve this problem.  You can use multiple of them
+*   You might want to use Queue.SimpleQueue (https://docs.python.org/3/library/queue.html#queue.SimpleQueue)
+*   .pop(0) is O(n), using it will more than likely violate time complexity!
 *   The first plane to arrive will also be the first to depart **_(HINT)_**
 *   If a plane has the same departure time as its arrival time, you can assume the plane performed a “touch-and-go”, and didn’t need a gate
 
