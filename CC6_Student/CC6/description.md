@@ -1,7 +1,7 @@
 **CC6 - SS21- Airport Organizer**
 =================================
 
-**Due: Thursday, March 4th, 11:59 pm**
+**Due: Tuesday, March 9th, 11:59 pm**
 
 _This is not a team project, do not copy someone else’s work._
 
@@ -67,7 +67,7 @@ _Modify the following functions_
 **Deliverables**
 ----------------
 
-Be sure to upload the following deliverables in a .zip folder to Mimir by **11:59PM** Eastern Time on **Thursday, 03/04/2021**.
+Be sure to upload the following deliverables in a .zip folder to Mimir by **11:59PM** Eastern Time on **Tuesday, 03/09/2021**.
 
 Your .zip folder can contain other files (for example, description.md and tests.py), but must include (at least) the following:
 
