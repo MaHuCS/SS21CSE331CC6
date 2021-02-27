@@ -1,0 +1,366 @@
+"""
+Implemented by: Yash Vesikar and Brandon Field
+"""
+
+class HashNode:
+    """
+    DO NOT EDIT
+    """
+    __slots__ = ["key", "value", "deleted"]
+
+    def __init__(self, key, value, deleted=False):
+        self.key = key
+        self.value = value
+        self.deleted = deleted
+
+    def __repr__(self):
+        return f"HashNode({self.key}, {self.value})"
+
+    def __eq__(self, other):
+        return self.key == other.key and self.value == other.value
+
+    def __iadd__(self, other):
+        self.value += other
+
+
+
+class HashTable:
+    """
+    Hash Table Class
+    """
+    __slots__ = ['capacity', 'size', 'table', 'prime_index']
+
+    primes = (
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83,
+        89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179,
+        181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277,
+        281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389,
+        397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+        503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617,
+        619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739,
+        743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859,
+        863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991,
+        997)
+
+    def __init__(self, capacity=8):
+        """
+        DO NOT EDIT
+        Initializes hash table
+        :param capacity: capacity of the hash table
+        """
+        self.capacity = capacity
+        self.size = 0
+        self.table = [None] * capacity
+
+        i = 0
+        while HashTable.primes[i] <= self.capacity:
+            i += 1
+        self.prime_index = i - 1
+
+    def __eq__(self, other):
+        """
+        DO NOT EDIT
+        Equality operator
+        :param other: other hash table we are comparing with this one
+        :return: bool if equal or not
+        """
+        if self.capacity != other.capacity or self.size != other.size:
+            return False
+        for i in range(self.capacity):
+            if self.table[i] != other.table[i]:
+                return False
+        return True
+
+    def __repr__(self):
+        """
+        DO NOT EDIT
+        Represents the table as a string
+        :return: string representation of the hash table
+        """
+        represent = ""
+        bin_no = 0
+        for item in self.table:
+            represent += "[" + str(bin_no) + "]: " + str(item) + '\n'
+            bin_no += 1
+        return represent
+
+    def _hash_1(self, key):
+        """
+        ---DO NOT EDIT---
+        Converts a string x into a bin number for our hash table
+        :param key: key to be hashed
+        :return: bin number to insert hash item at in our table, None if key is an empty string
+        """
+        if not key:
+            return None
+        hashed_value = 0
+
+        for char in key:
+            hashed_value = 181 * hashed_value + ord(char)
+        return hashed_value % self.capacity
+
+    def _hash_2(self, key):
+        """
+        ---DO NOT EDIT---
+        Converts a string x into a hash
+        :param x: key to be hashed
+        :return: a hashed value
+        """
+        if not key:
+            return None
+        hashed_value = 0
+
+        for char in key:
+            hashed_value = 181 * hashed_value + ord(char)
+
+        prime = HashTable.primes[self.prime_index]
+
+        hashed_value = prime - (hashed_value % prime)
+        if hashed_value % 2 == 0:
+            hashed_value += 1
+        return hashed_value
+
+    def __len__(self):
+        """
+        Getter for size
+        :return: size
+        """
+        return self.size
+
+    def __setitem__(self, key, value):
+        """
+        DO NOT EDIT
+        Allows for the use of the set operator to insert into table
+        :param key: string key to insert
+        :param value: value to insert
+        :return: None
+        """
+        self._insert(key=key, value=value)
+
+    def __getitem__(self, item):
+        """
+        DO NOT EDIT
+        Allows get operator to retrieve a value from the table
+        :param item: string key of item to retrieve from tabkle
+        :return: value associated with the item
+        """
+        if not self._get(item):
+            raise KeyError
+        return self._get(item).value
+
+    def __delitem__(self, key):
+        """
+        Allows del operator to delete a value from the table
+        :param key: the key of the item to remove from the table
+        :return: None
+        """
+        if not self._get(key):
+            raise KeyError
+        self._delete(key)
+
+    def __contains__(self, item):
+        """
+        DO NOT EDIT
+        Checks whether a given key exists in the table
+        :param item: string key of item to retrieve
+        :return: Bool
+        """
+        if self._get(item) is not None:
+            return True
+        return False
+
+
+    def hash(self, key, inserting=False):
+        """
+        Hash Method
+        :param key: key to hash
+        :param inserting: bool, are we inserting or not
+        :return: hashed bin for table
+        """
+        # double hash until you find the right index
+        index = self._hash_1(key)
+        probe = 0
+        ind = index
+        node = self.table[index]
+
+        # If I need to insert and this node has been deleted
+        if node and node.deleted and inserting:
+            return index
+
+        # If I found the element with the key and it isnt deleted
+        elif node and not node.deleted and node.key == key:
+            return index
+
+        # If I found an element at the node that isn't the same key, I have a collision,
+        # If it is None then I found the next available index
+        while node is not None:
+            if node and node.deleted and inserting:
+                return index
+            # If I found the element with the key return the index
+            elif node and not node.deleted and node.key == key:
+                return index
+            probe += 1  # Increment probe
+            # New index is hash_1() + (p * hash_2()) % capacity
+            index = (ind + probe * self._hash_2(key)) % self.capacity
+            node = self.table[index]
+        return index
+
+    def _insert(self, key, value):
+        """
+        Insert key and value into HashTable
+        :param key: string to be used as key value
+        :param value: int to be used as value mapped to key
+        """
+        index = self.hash(key, inserting=True)
+
+        # If the index is not invalid
+        if index is not None:
+            node = self.table[index]  # Get the node at that index
+
+            # Found the node
+            # If the node exists and the keys match, just update the value
+            if node and node.key == key:
+                node.value = value
+            # Empty bin
+            else:  # If it is an empty bin, then add a node to it
+                self.table[index] = HashNode(key=key, value=value)
+                self.size += 1
+
+            if (self.size / self.capacity) >= 0.5:
+                self._grow()
+
+    def _get(self, key):
+        """
+        Returns the hash node in the table based on the key
+        :param key: key of hash node to find in hash table
+        :return item: value in table if key exists, else None
+        """
+        index = self.hash(key)
+
+        # If the key is valid
+        if index is not None:
+            node = self.table[index]
+            if not node:  # The key does not exist in this case
+                return
+            # Check if the index contains the correct key
+            elif node.key == key:
+                return node
+
+        return None
+
+    def _delete(self, key):
+        """
+        Delete a key from the dictionary
+        :param key:
+        :return:
+        """
+        index = self.hash(key)
+
+        # If the key is valid
+        if index is not None:
+            node = self.table[index]
+            if not node:
+                return
+            # Check if the index contains the correct key
+            # Create empty hashnode and set the deleted flag
+            elif node.key == key:
+                self.table[index] = HashNode(None, None, True)
+                self.size -= 1
+
+    def _grow(self):
+        """
+        Grow the table to double the capacity
+        :return: None
+        """
+        old = self.table
+        self.table = [None] * (self.capacity * 2)
+        self.size = 0
+        self.capacity *= 2
+
+        j = self.prime_index
+        while HashTable.primes[j] < self.capacity:
+            j += 1
+        self.prime_index = j - 1
+
+        for i in old:
+            if i and not i.deleted:
+                self._insert(i.key, i.value)
+
+    def update(self, pairs=[]):
+        """
+        Updates values in the hash table with an iterable of key value pairs. Inserts a new node if the value doesn't
+        exist, or updates the existing value if it does
+        :param pairs: an iterable of key/value pairs
+        :return: None
+        """
+        for pair in pairs:
+            key, value = pair
+            self._insert(key, value)
+
+    def setdefault(self, key, default=None):
+        """
+        Sets the default value for the key, if no value is specified the value is None
+        :param key: the key to set the default for
+        :param default: the default value to insert
+        :return: the value associated with the key
+        """
+        if not self._get(key):
+            self._insert(key, default)
+            return default
+        return self._get(key).value
+
+    def keys(self):
+        """
+        Creates a generator object for all of the keys in the table
+        :return: the generator
+        """
+        for node in self.table:
+            if node and not node.deleted:
+                yield node.key
+
+    def values(self):
+        """
+        Creates a generator object for all of the values in the table
+        :return: the generator
+        """
+        for node in self.table:
+            if node and not node.deleted:
+                yield node.value
+
+    def items(self):
+        """
+        Creates a generator object for all of the values in the table
+        :return: the generator
+        """
+        for node in self.table:
+            if node and not node.deleted:
+                yield (node.key, node.value)
+
+    def clear(self):
+        """
+        Clears the hash table
+        :return: None
+        """
+        for i in range(len(self.table)):
+            self.table[i] = None
+        self.size = 0
+
+def hurdles(grid):
+    """
+    Given a grid of hurdles, find the column where you can run through the least amount of hurdles
+    :param grid: the grid of hurdles
+    :return: the least amount of hurdles to jump over
+    """
+    count = HashTable()
+    for row in grid:
+        counter = 0
+        for col in row[:-1]:
+            counter += col
+            key = str(counter)
+            if key in count:
+                count[key] += 1
+            else:
+                count[key] = 1
+    return len(grid) - int(max(count.values())) if len(count) else len(grid)
+
+
