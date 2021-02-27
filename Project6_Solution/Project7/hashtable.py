@@ -2,6 +2,7 @@
 Implemented by: Yash Vesikar and Brandon Field
 """
 
+
 class HashNode:
     """
     DO NOT EDIT
@@ -21,7 +22,6 @@ class HashNode:
 
     def __iadd__(self, other):
         self.value += other
-
 
 
 class HashTable:
@@ -103,7 +103,7 @@ class HashTable:
         """
         ---DO NOT EDIT---
         Converts a string x into a hash
-        :param x: key to be hashed
+        :param key: key to be hashed
         :return: a hashed value
         """
         if not key:
@@ -168,7 +168,6 @@ class HashTable:
         if self._get(item) is not None:
             return True
         return False
-
 
     def hash(self, key, inserting=False):
         """
@@ -344,6 +343,7 @@ class HashTable:
         for i in range(len(self.table)):
             self.table[i] = None
         self.size = 0
+
 
 def hurdles(grid):
     """
