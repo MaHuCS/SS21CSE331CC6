@@ -1,5 +1,5 @@
 import unittest
-from hashtable import HashTable, HashNode, hurdles
+from hashtable import HashTable, HashNode, hurdles, CataTravelTime
 
 
 class TestProject1(unittest.TestCase):
@@ -245,6 +245,16 @@ class TestProject1(unittest.TestCase):
 
         with self.assertRaises(KeyError):
             print(table['best'])
+
+    def test_cata_query(self):
+        cata = CataTravelTime()
+        cata.enter("Ian", "Wilson", 1)
+        cata.exit("Ian", "Akers", 4)
+        assert (cata.get_average("Wilson", "Akers") == 3)
+
+        cata.enter("Max", "Wilson", 2)
+        cata.exit("Max", "Anthony", 3)
+        assert (cata.get_average("Wilson", "Anthony") == 1)
 
 
 if __name__ == '__main__':
