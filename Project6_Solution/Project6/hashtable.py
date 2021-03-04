@@ -1,6 +1,15 @@
 """
-Implemented by: Yash Vesikar and Brandon Field
+Project 6
+CSE 331 S21 (Onsay)
+Your Name
+hashtable.py
 """
+
+from typing import TypeVar, List, Tuple
+
+T = TypeVar("T")
+HashNode = TypeVar("HashNode")
+HashTable = TypeVar("HashTable")
 
 
 class HashNode:
@@ -9,18 +18,20 @@ class HashNode:
     """
     __slots__ = ["key", "value", "deleted"]
 
-    def __init__(self, key, value, deleted=False):
+    def __init__(self, key: str, value: T, deleted: bool = False) -> None:
         self.key = key
         self.value = value
         self.deleted = deleted
 
-    def __repr__(self):
+    def __str__(self) -> str:
         return f"HashNode({self.key}, {self.value})"
 
-    def __eq__(self, other):
+    __repr__ = __str__
+
+    def __eq__(self, other: HashNode) -> bool:
         return self.key == other.key and self.value == other.value
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: T) -> None:
         self.value += other
 
 
@@ -42,7 +53,7 @@ class HashTable:
         863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991,
         997)
 
-    def __init__(self, capacity=8):
+    def __init__(self, capacity: int = 8) -> None:
         """
         DO NOT EDIT
         Initializes hash table
@@ -57,7 +68,7 @@ class HashTable:
             i += 1
         self.prime_index = i - 1
 
-    def __eq__(self, other):
+    def __eq__(self, other: HashTable):
         """
         DO NOT EDIT
         Equality operator
@@ -187,7 +198,7 @@ class HashTable:
             return index
 
         # If I found the element with the key and it isnt deleted
-        elif node and not node.deleted and node.key == key:
+        if node and not node.deleted and node.key == key:
             return index
 
         # If I found an element at the node that isn't the same key, I have a collision,
@@ -196,7 +207,7 @@ class HashTable:
             if node and node.deleted and inserting:
                 return index
             # If I found the element with the key return the index
-            elif node and not node.deleted and node.key == key:
+            if node and not node.deleted and node.key == key:
                 return index
             probe += 1  # Increment probe
             # New index is hash_1() + (p * hash_2()) % capacity
@@ -345,37 +356,18 @@ class HashTable:
         self.size = 0
 
 
-def hurdles(grid):
-    """
-    Given a grid of hurdles, find the column where you can run through the least amount of hurdles
-    :param grid: the grid of hurdles
-    :return: the least amount of hurdles to jump over
-    """
-    count = HashTable()
-    for row in grid:
-        counter = 0
-        for col in row[:-1]:
-            counter += col
-            key = str(counter)
-            if key in count:
-                count[key] += 1
-            else:
-                count[key] = 1
-    return len(grid) - int(max(count.values())) if len(count) else len(grid)
-
-
 class CataTravelTime:
     def __init__(self):
         self.table = HashTable()
         self.current = HashTable()
 
-    def enter(self, id, origin, time):
-        self.current[id] = origin, time
+    def enter(self, idx, origin, time):
+        self.current[idx] = origin, time
 
-    def exit(self, id, dest, time):
-        if id not in self.current:
+    def exit(self, idx, dest, time):
+        if idx not in self.current:
             return
-        start_station, start_time = self.current[id]
+        start_station, start_time = self.current[idx]
         if start_station not in self.table:
             self.table[start_station] = HashTable()
         if dest not in self.table[start_station]:
@@ -384,7 +376,7 @@ class CataTravelTime:
         current_total += time - start_time
         trips += 1
         self.table[start_station][dest] = (current_total, trips)
-        del self.current[id]
+        del self.current[idx]
 
     def get_average(self, origin, dest):
         if self.table[origin] is None or self.table[origin][dest] is None:
