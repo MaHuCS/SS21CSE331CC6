@@ -355,31 +355,7 @@ class HashTable:
             self.table[i] = None
         self.size = 0
 
-
-<<<<<<< HEAD:Project6_Solution/Project7/hashtable.py
-def hurdles(grid):
-    """
-    Given a grid of hurdles, find the column where you can run through the least amount of hurdles
-    :param grid: the grid of hurdles
-    :return: the least amount of hurdles to jump over
-    """
-    count = HashTable()
-    for row in grid:
-        counter = 0
-        for col in row[:-1]:
-            counter += col
-            key = str(counter)
-            if key in count:
-                count[key] += 1
-            else:
-                count[key] = 1
-    return len(grid) - int(max(count.values())) if len(count) else len(grid)
-
-
-class CataData:
-=======
 class CataTravelTime:
->>>>>>> 7f887ed7fd03dea42a7c6cdffcbea10775a1108f:Project6_Solution/Project6/hashtable.py
     def __init__(self):
         self.table = HashTable()
         self.current = HashTable()
