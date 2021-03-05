@@ -355,7 +355,7 @@ class HashTable:
             self.table[i] = None
         self.size = 0
 
-class CataTravelTime:
+class CataData:
     def __init__(self):
         self.table = HashTable()
         self.current = HashTable()

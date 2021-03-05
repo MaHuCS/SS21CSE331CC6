@@ -1,6 +1,6 @@
 import unittest
 import random
-from hashtable import HashTable, HashNode, hurdles, CataData
+from hashtable import HashTable, HashNode, CataData
 
 random.seed(331)
 
@@ -196,23 +196,6 @@ class TestProject1(unittest.TestCase):
         assert table.size == 0
         for node in table.table:
             assert node is None
-
-    def test_hurdles(self):
-        # input from picture in specs
-        grid = [[1, 2, 2, 1],
-                [3, 1, 2],
-                [1, 3, 2],
-                [2, 4],
-                [3, 1, 2],
-                [1, 3, 1, 1]]
-
-        assert hurdles(grid) == 2
-
-        grid = [[5, 2, 2, 1],
-                [3, 2, 5],
-                [1, 2, 1, 2, 1, 2, 1]]
-
-        assert hurdles(grid) == 1
 
     def test_all(self):
         table = HashTable()
