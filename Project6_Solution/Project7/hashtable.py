@@ -364,7 +364,7 @@ def hurdles(grid):
     return len(grid) - int(max(count.values())) if len(count) else len(grid)
 
 
-class CataTravelTime:
+class CataData:
     def __init__(self):
         self.table = HashTable()
         self.current = HashTable()
@@ -387,7 +387,7 @@ class CataTravelTime:
         del self.current[id]
 
     def get_average(self, origin, dest):
-        if self.table[origin] is None or self.table[origin][dest] is None:
-            return 0
+        if origin not in self.table or dest not in self.table[origin]:
+            return 0.0
         total_time, trips = self.table[origin][dest]
         return total_time / trips
