@@ -169,7 +169,8 @@ class TestProject1(unittest.TestCase):
             abc = table2["Enbody"]
 
     def test_delitem(self):
-        table = HashTable()
+        # (1) Basic
+        table = HashTable(capacity=16)
 
         pre_solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
                         None, HashNode('best', 42), None, None, None, HashNode('cse331', 100), None]
@@ -178,49 +179,98 @@ class TestProject1(unittest.TestCase):
                          None,
                          HashNode(None, None), None, None, None, HashNode('cse331', 100), None]
 
-        table["cse331"] = 100
-        table["is_the"] = 3005
-
-        assert (table.size == 2)
-        assert (table.capacity == 8)
-
-        table['best'] = 42
-        table['class_ever'] = 1
-
-        assert (table.size == 4)
-        assert (table.capacity == 16)
-        print(table)
-
-        assert (pre_solution == table.table)
+        table.table = pre_solution  # set the table so insert does not need to work
+        table.size = 4
 
         delete = ['best', 'is_the']
         for k in delete:
             del table[k]
 
-        assert (post_solution == table.table)
-        print(table)
+        self.assertEqual(post_solution, table.table)
+        self.assertEqual(2, table.size)
+
+        # (2) Large Comprehensive
+        table2 = HashTable(capacity=64)
+
+        keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
+                "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
+        vals = [i * 10 for i in range(19)]
+
+        pre_solution = [None, None, None, None, HashNode("Ian", 10), None, None, None, HashNode("H", 30),
+                        HashNode("Andrew", 20), None, None, None, None, None, None, HashNode("Olivia", 50), None,
+                        HashNode("Zach", 100), None, None, HashNode("Yash", 170), None, None, HashNode("Lukas", 60),
+                        HashNode("Scott", 150), None, None, None, None, HashNode("Onsay", 120), None,
+                        HashNode("Brandon", 160), HashNode("Zosha", 140), None, None, HashNode("Bank", 110), None, None,
+                        None, None, None, None, None, None, None, None, HashNode("Sarah", 180), None, None,
+                        HashNode("Anna", 130), None, None, None, HashNode("Angelo", 80), HashNode("Sean", 70),
+                        HashNode("Andy", 40), None, None, None, None, HashNode("Max", 0), None, HashNode("Jacob", 90)]
+
+        solution = [None, None, None, None, HashNode(None, None), None, None, None, HashNode(None, None),
+                    HashNode(None, None), None, None, None, None, None, None, HashNode(None, None), None,
+                    HashNode("Zach", 100), None, None, HashNode("Yash", 170), None, None, HashNode(None, None),
+                    HashNode("Scott", 150), None, None, None, None, HashNode("Onsay", 120), None,
+                    HashNode("Brandon", 160), HashNode("Zosha", 140), None, None, HashNode("Bank", 110), None, None,
+                    None, None, None, None, None, None, None, None, HashNode("Sarah", 180), None, None,
+                    HashNode("Anna", 130), None, None, None, HashNode(None, None), HashNode(None, None),
+                    HashNode(None, None), None, None, None, None, HashNode(None, None), None, HashNode(None, None)]
+
+        table2.table = pre_solution  # set the table so insert does not need to work
+        table2.size = 19
+
+        for i, key in enumerate(keys):
+            if i < 10:
+                del table2[key]
+
+        self.assertEqual(solution, table2.table)
+        self.assertEqual(9, table2.size)
+
+        # (3) KeyError Check
+        with self.assertRaises(KeyError):
+            del table2["Enbody"]
+        self.assertEqual(9, table2.size)
 
     def test_contains(self):
+        # (1) Not in Table
         table = HashTable()
-        assert ('key' in table) == False
+        self.assertEqual(False, 'key' in table)
 
-        table['key'] = 7
+        # (2) In Table
+        table.table[5] = HashNode('key', 331)
 
-        assert ('key' in table) == True
-        assert ('new_key' in table) == False
+        self.assertEqual(True, 'key' in table)
+        self.assertEqual(False, 'new_key' in table)
 
     def test_update(self):
+        # (1) Not in Table Already
         table = HashTable()
 
-        table["birds"] = 10
-        table["real"] = 15
+        table.update([("minecraft", 10), ("ghast", 15)])
+        self.assertEqual(10, table["minecraft"])
+        self.assertEqual(15, table["ghast"])
+        self.assertEqual(2, table.size)
 
-        table.update([("aren't", 20), ("real", 8)])
+        # (2) Update Values in Table
+        table.update([("minecraft", 31), ("ghast", 42)])
+        self.assertEqual(31, table["minecraft"])
+        self.assertEqual(42, table["ghast"])
+        self.assertEqual(2, table.size)
 
-        assert table["aren't"] == 20
-        assert table["real"] == 8
+        # (3) Update Values in Table and Add New Values
+        table.update([("minecraft", 50), ("enderman", 12)])
+        self.assertEqual(50, table["minecraft"])
+        self.assertEqual(12, table["enderman"])
+        self.assertEqual(42, table["ghast"])
+        self.assertEqual(3, table.size)
+
+        # (4) Do Nothing
+        table.update()
+        self.assertEqual(50, table["minecraft"])
+        self.assertEqual(12, table["enderman"])
+        self.assertEqual(42, table["ghast"])
+        self.assertEqual(3, table.size)
 
     def test_keys_values_items(self):
+        # (1) Basic
         table = HashTable()
 
         initial_keys = ['one', 'two', 'three']
@@ -234,11 +284,31 @@ class TestProject1(unittest.TestCase):
         values = table.values()
         items = table.items()
 
-        assert set(initial_keys) == set(keys)
-        assert set(initial_values) == set(values)
-        assert set(initial_items) == set(items)
+        self.assertEqual(set(initial_keys), set(keys))
+        self.assertEqual(set(initial_values), set(values))
+        self.assertEqual(set(initial_items), set(items))
+
+        # (2) Large
+        table2 = HashTable()
+        initial_keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach",
+                        "Bank", "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
+        initial_values = [i * 10 for i in range(19)]
+        initial_items = []
+
+        for i, key in enumerate(initial_keys):
+            table2[key] = initial_values[i]
+            initial_items.append((key, initial_values[i]))
+
+        keys = table2.keys()
+        values = table2.values()
+        items = table2.items()
+
+        self.assertEqual(set(initial_keys), set(keys))
+        self.assertEqual(set(initial_values), set(values))
+        self.assertEqual(set(initial_items), set(items))
 
     def test_clear(self):
+        # (1) Table with contents
         table = HashTable()
 
         table['table'] = 1
@@ -246,25 +316,29 @@ class TestProject1(unittest.TestCase):
         table['be'] = 3
         table['cleared'] = 4
 
-        table.clear()
-
-        assert table.size == 0
-        for node in table.table:
-            assert node is None
+        self.assertEqual(4, table.size)
 
         table.clear()
 
-        assert table.size == 0
+        self.assertEqual(0, table.size)
         for node in table.table:
-            assert node is None
+            self.assertIsNone(node)
 
+        # (2) Empty Table
+        table.clear()
+
+        self.assertEqual(0, table.size)
+        for node in table.table:
+            self.assertIsNone(node)
+
+        # (3) Reused Table
         table['one'] = 1
 
         table.clear()
 
-        assert table.size == 0
+        self.assertEqual(0, table.size)
         for node in table.table:
-            assert node is None
+            self.assertIsNone(node)
 
     def test_all(self):
         table = HashTable()
