@@ -31,10 +31,10 @@ class TestProject1(unittest.TestCase):
         table3 = HashTable(capacity=16)
 
         table3.table = [None, None, None,
-                       HashNode('class_ever', 1), HashNode(None, None, True),
-                       HashNode(None, None, True), None, None, None,
-                       None, HashNode(None, None, True), None,
-                       None, None, HashNode('cse331', 100), None]
+                        HashNode('class_ever', 1), HashNode(None, None, True),
+                        HashNode(None, None, True), None, None, None,
+                        None, HashNode(None, None, True), None,
+                        None, None, HashNode('cse331', 100), None]
 
         # Should insert in the first available bin
         self.assertEqual(4, table3.hash("is_the", inserting=True))
@@ -53,7 +53,7 @@ class TestProject1(unittest.TestCase):
         # (4) Large Comprehensive
         keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
                 "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
-        vals = [i*10 for i in range(19)]
+        vals = [i * 10 for i in range(19)]
 
         table4 = HashTable(capacity=16)
 
@@ -68,8 +68,61 @@ class TestProject1(unittest.TestCase):
 
         for i, key in enumerate(keys):
             # inserts every key in inserting mode and normal mode
-            self.assertEqual(expected[2*i], table4.hash(key, inserting=True))
-            self.assertEqual(expected[2*i + 1], table4.hash(key))
+            self.assertEqual(expected[2 * i], table4.hash(key, inserting=True))
+            self.assertEqual(expected[2 * i + 1], table4.hash(key))
+
+    def test_insert_get_delete(self):
+        # This test is just to make sure that the hidden methods do the proper amount of work!
+
+        # (1) Insert
+        table = HashTable()
+
+        solution = [None, None, None, None, HashNode('is_the', 3005), None, HashNode('cse331', 100), None]
+
+        table._insert('cse331', 100)
+        table._insert('is_the', 3005)
+
+        self.assertEqual(solution, table.table)
+
+        solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
+                    None, HashNode('best', 42), None, None, None, HashNode('cse331', 100), None]
+
+        table._insert('best', 42)
+        table._insert('class_ever', 1)
+
+        self.assertEqual(4, table.size)
+        self.assertEqual(16, table.capacity)
+        self.assertEqual(solution, table.table)
+
+        # (2) Get
+        table = HashTable(capacity=8)
+
+        solution = [None, None, None, None, HashNode('is_the', 3005), None, HashNode('cse331', 100), None]
+        table.table = solution  # set the table so insert does not need to work
+        table.size = 2
+
+        self.assertEqual(HashNode("is_the", 3005), table._get('is_the'))
+        self.assertEqual(HashNode("cse331", 100), table._get('cse331'))
+        self.assertIsNone(table._get('cse320'))
+
+        # (3) Delete
+        table = HashTable(capacity=16)
+
+        pre_solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
+                        None, HashNode('best', 42), None, None, None, HashNode('cse331', 100), None]
+
+        post_solution = [None, None, None, HashNode('class_ever', 1), HashNode(None, None, True), None, None, None,
+                         None, None, HashNode(None, None, True), None, None, None, HashNode('cse331', 100), None]
+
+        table.table = pre_solution  # set the table so insert does not need to work
+        table.size = 4
+
+        delete = ['best', 'is_the']
+        for k in delete:
+            table._delete(k)
+
+        self.assertEqual(post_solution, table.table)
+        self.assertEqual(2, table.size)
 
     def test_len(self):
         # (1) Empty
@@ -156,7 +209,7 @@ class TestProject1(unittest.TestCase):
         self.assertEqual(1, table["class_ever"])
 
         # (3) Large Comprehensive
-        table2 = HashTable(capacity = 64)
+        table2 = HashTable(capacity=64)
 
         keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
                 "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
@@ -188,9 +241,8 @@ class TestProject1(unittest.TestCase):
         pre_solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
                         None, HashNode('best', 42), None, None, None, HashNode('cse331', 100), None]
 
-        post_solution = [None, None, None, HashNode('class_ever', 1), HashNode(None, None), None, None, None, None,
-                         None,
-                         HashNode(None, None), None, None, None, HashNode('cse331', 100), None]
+        post_solution = [None, None, None, HashNode('class_ever', 1), HashNode(None, None, True), None, None, None,
+                         None, None, HashNode(None, None, True), None, None, None, HashNode('cse331', 100), None]
 
         table.table = pre_solution  # set the table so insert does not need to work
         table.size = 4
@@ -356,36 +408,94 @@ class TestProject1(unittest.TestCase):
     def test_all(self):
         table = HashTable()
 
-        pre_solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
-                        None, HashNode('best', 42), None, None, None, HashNode('cse331', 100), None]
+        sol_keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
+                    "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
+        sol_vals = [i * 100 for i in range(19)]
 
-        post_solution = [None, None, None, HashNode('class_ever', 1), HashNode(None, None), None, None, None, None,
-                         None, HashNode(None, None), None, None, None, HashNode('cse331', 100), None]
+        solution_a = [None, None, None, None, HashNode("Ian", 100), None, None, None, HashNode("H", 300),
+                      HashNode("Andrew", 200), None, None, None, None, None, None, HashNode("Olivia", 500), None,
+                      HashNode("Zach", 1000), None, None, HashNode("Yash", 1700), None, None, HashNode("Lukas", 600),
+                      HashNode("Scott", 1500), None, None, None, None, HashNode("Onsay", 1200), None,
+                      HashNode("Brandon", 1600), HashNode("Zosha", 1400), None, None, HashNode("Bank", 1100), None,
+                      None, None, None, None, None, None, None, None, None, HashNode("Sarah", 1800), None, None,
+                      HashNode("Anna", 1300), None, None, None, HashNode("Angelo", 800), HashNode("Sean", 700),
+                      HashNode("Andy", 400), None, None, None, None, HashNode("Max", 0), None, HashNode("Jacob", 900)]
 
-        table['cse331'] = 100
-        table['is_the'] = 3005
+        solution_b = [None, None, None, None, HashNode(None, None), None, None, None, HashNode(None, None),
+                      HashNode(None, None), None, None, None, None, None, None, HashNode(None, None), None,
+                      HashNode("Zach", 1000), None, None, HashNode("Yash", 1700), None, None, HashNode(None, None),
+                      HashNode("Scott", 1500), None, None, None, None, HashNode("Onsay", 1200), None,
+                      HashNode("Brandon", 1600), HashNode("Zosha", 1400), None, None, HashNode("Bank", 1100), None,
+                      None, None, None, None, None, None, None, None, None, HashNode("Sarah", 1800), None, None,
+                      HashNode("Anna", 1300), None, None, None, HashNode(None, None), HashNode(None, None),
+                      HashNode(None, None), None, None, None, None, HashNode(None, None), None, HashNode(None, None)]
 
-        assert (table.size == 2)
-        assert (table.capacity == 8)
+        solution_c = [None, None, None, None, HashNode("Ian", 45), None, None, None, HashNode("H", 300),
+                      HashNode("Andrew", 200), None, None, None, None, None, None, HashNode("Olivia", 500), None,
+                      HashNode("Zach", 1000), None, None, HashNode("Yash", 1700), None, None, HashNode("Lukas", 600),
+                      HashNode("Scott", 1500), None, None, None, None, HashNode("Onsay", 1200), None,
+                      HashNode("Brandon", 1600), HashNode("Zosha", 1400), None, None, HashNode("Bank", 1100), None,
+                      None, None, None, None, None, None, None, None, None, HashNode("Sarah", 1800), None, None,
+                      HashNode("Anna", 1300), None, None, None, HashNode("Angelo", 800), HashNode("Sean", 700),
+                      HashNode("Andy", 400), None, None, None, None, HashNode("Max", 40), None, HashNode("Jacob", 900)]
 
-        table['best'] = 42
-        table['class_ever'] = 1
+        # Insertions/Grow
+        sizes = [i + 1 for i in range(19)]
+        capacities = [8] * 3 + [16] * 4 + [32] * 8 + [64] * 4
+        for i, key in enumerate(sol_keys):
+            table[key] = sol_vals[i]
+            self.assertEqual(sizes[i], table.size)
+            self.assertEqual(capacities[i], table.capacity)
 
-        assert (table.size == 4)
-        assert (table.capacity == 16)
-        print(table)
+        self.assertEqual(solution_a, table.table)
 
-        assert (pre_solution == table.table)
-
-        delete = ['best', 'is_the']
-        for k in delete:
-            del table[k]
-
-        assert (post_solution == table.table)
-        print(table)
+        # Get
+        for i, key in enumerate(sol_keys):
+            self.assertEqual(sol_vals[i], table[key])
 
         with self.assertRaises(KeyError):
-            print(table['best'])
+            abc = table["Owen"]
+
+        # Delete
+        for i, key in enumerate(sol_keys):
+            if i < 10:
+                del table[key]
+
+        self.assertEqual(solution_b, table.table)
+        self.assertEqual(9, table.size)
+
+        with self.assertRaises(KeyError):
+            del table["Owen"]
+        self.assertEqual(9, table.size)
+
+        # Clear
+        table.clear()
+
+        self.assertEqual(0, table.size)
+        for node in table.table:
+            self.assertIsNone(node)
+
+        table = HashTable()
+        for i, key in enumerate(sol_keys):
+            table[key] = sol_vals[i]
+
+        # Keys/Vals/Items
+        keys = table.keys()
+        values = table.values()
+        items = table.items()
+
+        self.assertEqual(set(sol_keys), set(keys))
+        self.assertEqual(set(sol_vals), set(values))
+        self.assertEqual({(sol_keys[i], sol_vals[i]) for i in range(19)}, set(items))
+
+        # Contains
+        for i, key in enumerate(sol_keys):
+            self.assertEqual(True, key in table)
+        self.assertEqual(False, "Ofria" in table)
+
+        # Update
+        table.update([("Ian", 45), ("Max", 40)])
+        self.assertEqual(solution_c, table.table)
 
     def test_cata_query(self):
         cata_data = CataData()
@@ -430,32 +540,32 @@ class TestProject1(unittest.TestCase):
         self.assertAlmostEqual(expected, student_response)
 
     def test_cata_query_large(self):
-        bus_stops = ["Wilson", "Case", "Wonders", "IM West", "Wells", "1855",\
-            "Spartan Stadium", "Anthony", "Engineering", "Bessey", "Grand River", "Union",\
-                "Akers", "IM East", "Natural Resources", "Lot 89", "Biochemistry", "SnyPhy",\
-                    "Landon", "Brody", "Breslin", "CommArtSci", "VetMed"]
+        bus_stops = ["Wilson", "Case", "Wonders", "IM West", "Wells", "1855", \
+                     "Spartan Stadium", "Anthony", "Engineering", "Bessey", "Grand River", "Union", \
+                     "Akers", "IM East", "Natural Resources", "Lot 89", "Biochemistry", "SnyPhy", \
+                     "Landon", "Brody", "Breslin", "CommArtSci", "VetMed"]
         answers = [15.333333333333334, 9.0, 19.0, 35.0, 42.0, 27.0, 12.0, 31.0, \
-            33.0, 14.5, 16.5, 28.5, 7.0, 12.0, 22.0, 15.333333333333334, 33.0, \
-            10.0, 16.5, 24.0, 31.0, 12.5, 6.0, 1.0, 12.0, 11.5, 33.0, 19.0, \
-            31.0, 6.0, 32.5, 32.5, 12.0, 43.0, 7.0, 36.0, 12.0, 23.333333333333332, \
-            12.0, 30.0, 28.0, 20.0, 17.0, 38.0, 20.0, 30.0, 18.0, 22.0, 28.5, 19.0, \
-            39.5, 19.0, 26.0, 39.0, 23.0, 19.0, 26.0, 43.0, 15.333333333333334, 15.0, \
-            30.0, 40.0, 14.0, 23.333333333333332, 31.0, 28.0, 12.5, 17.5, 12.0, 11.0, \
-            24.0, 29.666666666666668, 33.0, 17.0, 44.0, 13.0, 5.0, 16.0, 38.0, 31.0, \
-            24.0, 33.0, 25.0, 32.0, 20.0, 33.0, 19.0, 14.0, 25.5, 34.0, 10.0, 2.0, \
-            28.0, 27.0, 8.0, 1.0, 26.0, 37.0, 17.5, 25.333333333333332, 34.0, 44.0, \
-            41.0, 44.0, 29.0, 11.0, 34.0, 19.0, 27.0, 19.5, 20.0, 41.0, 19.0, 17.0, \
-            14.0, 18.0, 25.5, 17.0, 4.0, 38.0, 39.0, 29.0, 29.666666666666668, 36.0, \
-            18.0, 30.0, 21.0, 31.5, 41.0, 29.0, 2.0, 24.0, 8.0, 21.0, 33.5, 28.0, 42.0, \
-            15.0, 21.0, 25.5, 22.0, 19.0, 37.0, 30.0, 23.5, 27.0, 1.0, 20.0, 25.0, 35.0, \
-            22.0, 30.0, 22.5, 23.0, 23.333333333333332, 6.0, 32.0, 22.0, 32.0, 18.0, 6.0, \
-            24.0, 18.0, 22.0, 43.0, 16.0, 18.0, 6.0, 13.0, 25.333333333333332, 35.0, 36.0, \
-            43.0, 14.0, 9.0, 29.666666666666668, 15.0, 24.0, 11.5, 36.0, 41.0, 43.0, 26.0, \
-            11.0, 6.0, 2.0, 25.333333333333332, 24.0, 1.0, 10.0, 39.5, 40.0, 39.5, 27.0, \
-            39.5, 42.0, 8.0, 33.0, 29.0, 4.0, 15.0, 9.0, 35.0, 41.0, 45.0, 19.5, 14.5, 43.5, \
-            23.0, 23.5, 14.0, 26.0, 31.5, 5.0, 5.0, 43.5, 1.0, 5.0, 40.0, 4.0, 8.0, 12.0, \
-            15.0, 33.5, 20.0, 24.0, 26.0, 41.0, 25.5, 35.0, 12.0, 44.0, 32.0, 18.0, 14.0, \
-            29.0, 21.0, 8.0, 22.5, 24.0, 16.0, 27.0, 4.0, 20.0, 3.0, 12.0, 20.0, 26.0, 45.0, 40.0]
+                   33.0, 14.5, 16.5, 28.5, 7.0, 12.0, 22.0, 15.333333333333334, 33.0, \
+                   10.0, 16.5, 24.0, 31.0, 12.5, 6.0, 1.0, 12.0, 11.5, 33.0, 19.0, \
+                   31.0, 6.0, 32.5, 32.5, 12.0, 43.0, 7.0, 36.0, 12.0, 23.333333333333332, \
+                   12.0, 30.0, 28.0, 20.0, 17.0, 38.0, 20.0, 30.0, 18.0, 22.0, 28.5, 19.0, \
+                   39.5, 19.0, 26.0, 39.0, 23.0, 19.0, 26.0, 43.0, 15.333333333333334, 15.0, \
+                   30.0, 40.0, 14.0, 23.333333333333332, 31.0, 28.0, 12.5, 17.5, 12.0, 11.0, \
+                   24.0, 29.666666666666668, 33.0, 17.0, 44.0, 13.0, 5.0, 16.0, 38.0, 31.0, \
+                   24.0, 33.0, 25.0, 32.0, 20.0, 33.0, 19.0, 14.0, 25.5, 34.0, 10.0, 2.0, \
+                   28.0, 27.0, 8.0, 1.0, 26.0, 37.0, 17.5, 25.333333333333332, 34.0, 44.0, \
+                   41.0, 44.0, 29.0, 11.0, 34.0, 19.0, 27.0, 19.5, 20.0, 41.0, 19.0, 17.0, \
+                   14.0, 18.0, 25.5, 17.0, 4.0, 38.0, 39.0, 29.0, 29.666666666666668, 36.0, \
+                   18.0, 30.0, 21.0, 31.5, 41.0, 29.0, 2.0, 24.0, 8.0, 21.0, 33.5, 28.0, 42.0, \
+                   15.0, 21.0, 25.5, 22.0, 19.0, 37.0, 30.0, 23.5, 27.0, 1.0, 20.0, 25.0, 35.0, \
+                   22.0, 30.0, 22.5, 23.0, 23.333333333333332, 6.0, 32.0, 22.0, 32.0, 18.0, 6.0, \
+                   24.0, 18.0, 22.0, 43.0, 16.0, 18.0, 6.0, 13.0, 25.333333333333332, 35.0, 36.0, \
+                   43.0, 14.0, 9.0, 29.666666666666668, 15.0, 24.0, 11.5, 36.0, 41.0, 43.0, 26.0, \
+                   11.0, 6.0, 2.0, 25.333333333333332, 24.0, 1.0, 10.0, 39.5, 40.0, 39.5, 27.0, \
+                   39.5, 42.0, 8.0, 33.0, 29.0, 4.0, 15.0, 9.0, 35.0, 41.0, 45.0, 19.5, 14.5, 43.5, \
+                   23.0, 23.5, 14.0, 26.0, 31.5, 5.0, 5.0, 43.5, 1.0, 5.0, 40.0, 4.0, 8.0, 12.0, \
+                   15.0, 33.5, 20.0, 24.0, 26.0, 41.0, 25.5, 35.0, 12.0, 44.0, 32.0, 18.0, 14.0, \
+                   29.0, 21.0, 8.0, 22.5, 24.0, 16.0, 27.0, 4.0, 20.0, 3.0, 12.0, 20.0, 26.0, 45.0, 40.0]
         # Keeps track of trips taken
         trips = list()
         # Used to store the starting bus stop of an entry with its enter time
@@ -469,7 +579,7 @@ class TestProject1(unittest.TestCase):
             start_time = random.randint(0, 1000)
             cata_data.enter(str(i), bus_stops[start_pos], start_time)
             stations_and_time.append((start_pos, start_time))
-        
+
         for i in range(250):
             # Get the start time
             start_pos, start_time = stations_and_time[i]
@@ -485,6 +595,7 @@ class TestProject1(unittest.TestCase):
         for i in range(len(answers)):
             student = cata_data.get_average(trips[i][0], trips[i][1])
             self.assertAlmostEqual(answers[i], student)
+
 
 if __name__ == '__main__':
     unittest.main()
