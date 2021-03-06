@@ -68,7 +68,7 @@ class HashTable:
             i += 1
         self.prime_index = i - 1
 
-    def __eq__(self, other: HashTable):
+    def __eq__(self, other: HashTable) -> bool:
         """
         DO NOT EDIT
         Equality operator
@@ -82,7 +82,7 @@ class HashTable:
                 return False
         return True
 
-    def __repr__(self):
+    def __str__(self) -> str:
         """
         DO NOT EDIT
         Represents the table as a string
@@ -95,7 +95,9 @@ class HashTable:
             bin_no += 1
         return represent
 
-    def _hash_1(self, key):
+    __repr__ = __str__
+
+    def _hash_1(self, key: str) -> int:
         """
         ---DO NOT EDIT---
         Converts a string x into a bin number for our hash table
@@ -110,7 +112,7 @@ class HashTable:
             hashed_value = 181 * hashed_value + ord(char)
         return hashed_value % self.capacity
 
-    def _hash_2(self, key):
+    def _hash_2(self, key: str) -> int:
         """
         ---DO NOT EDIT---
         Converts a string x into a hash
@@ -131,14 +133,14 @@ class HashTable:
             hashed_value += 1
         return hashed_value
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Getter for size
         :return: size
         """
         return self.size
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: T) -> None:
         """
         DO NOT EDIT
         Allows for the use of the set operator to insert into table
@@ -148,18 +150,18 @@ class HashTable:
         """
         self._insert(key=key, value=value)
 
-    def __getitem__(self, item):
+    def __getitem__(self, key: str) -> T:
         """
         DO NOT EDIT
         Allows get operator to retrieve a value from the table
-        :param item: string key of item to retrieve from tabkle
+        :param key: string key of item to retrieve from table
         :return: value associated with the item
         """
-        if not self._get(item):
+        if not self._get(key):
             raise KeyError
-        return self._get(item).value
+        return self._get(key).value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str) -> None:
         """
         Allows del operator to delete a value from the table
         :param key: the key of the item to remove from the table
@@ -169,18 +171,18 @@ class HashTable:
             raise KeyError
         self._delete(key)
 
-    def __contains__(self, item):
+    def __contains__(self, key: str) -> bool:
         """
         DO NOT EDIT
         Checks whether a given key exists in the table
         :param item: string key of item to retrieve
         :return: Bool
         """
-        if self._get(item) is not None:
+        if self._get(key) is not None:
             return True
         return False
 
-    def hash(self, key, inserting=False):
+    def hash(self, key: str, inserting: bool = False) -> int:
         """
         Hash Method
         :param key: key to hash
@@ -215,7 +217,7 @@ class HashTable:
             node = self.table[index]
         return index
 
-    def _insert(self, key, value):
+    def _insert(self, key: str, value: T) -> None:
         """
         Insert key and value into HashTable
         :param key: string to be used as key value
@@ -239,7 +241,7 @@ class HashTable:
             if (self.size / self.capacity) >= 0.5:
                 self._grow()
 
-    def _get(self, key):
+    def _get(self, key: str) -> HashNode:
         """
         Returns the hash node in the table based on the key
         :param key: key of hash node to find in hash table
@@ -251,18 +253,18 @@ class HashTable:
         if index is not None:
             node = self.table[index]
             if not node:  # The key does not exist in this case
-                return
+                return None
             # Check if the index contains the correct key
             elif node.key == key:
                 return node
 
         return None
 
-    def _delete(self, key):
+    def _delete(self, key: str) -> None:
         """
         Delete a key from the dictionary
-        :param key:
-        :return:
+        :param key: the key we are deleting from the hash table
+        :return: None
         """
         index = self.hash(key)
 
@@ -277,7 +279,7 @@ class HashTable:
                 self.table[index] = HashNode(None, None, True)
                 self.size -= 1
 
-    def _grow(self):
+    def _grow(self) -> None:
         """
         Grow the table to double the capacity
         :return: None
@@ -296,7 +298,7 @@ class HashTable:
             if i and not i.deleted:
                 self._insert(i.key, i.value)
 
-    def update(self, pairs=[]):
+    def update(self, pairs: List[Tuple[str, T]] = []) -> None:
         """
         Updates values in the hash table with an iterable of key value pairs. Inserts a new node if the value doesn't
         exist, or updates the existing value if it does
@@ -307,46 +309,28 @@ class HashTable:
             key, value = pair
             self._insert(key, value)
 
-    def setdefault(self, key, default=None):
+    def keys(self) -> List[str]:
         """
-        Sets the default value for the key, if no value is specified the value is None
-        :param key: the key to set the default for
-        :param default: the default value to insert
-        :return: the value associated with the key
+        Creates a list of all the keys in the table
+        :return: list of keys
         """
-        if not self._get(key):
-            self._insert(key, default)
-            return default
-        return self._get(key).value
+        return [node.key for node in self.table if node and not node.deleted]
 
-    def keys(self):
+    def values(self) -> List[T]:
         """
-        Creates a generator object for all of the keys in the table
-        :return: the generator
+        Creates a list of all the values in the table
+        :return: list of values
         """
-        for node in self.table:
-            if node and not node.deleted:
-                yield node.key
+        return [node.value for node in self.table if node and not node.deleted]
 
-    def values(self):
+    def items(self) -> List[Tuple[str, T]]:
         """
-        Creates a generator object for all of the values in the table
-        :return: the generator
+        Creates a list of all the items in the table
+        :return: list of items
         """
-        for node in self.table:
-            if node and not node.deleted:
-                yield node.value
+        return [(node.key, node.value) for node in self.table if node and not node.deleted]
 
-    def items(self):
-        """
-        Creates a generator object for all of the values in the table
-        :return: the generator
-        """
-        for node in self.table:
-            if node and not node.deleted:
-                yield (node.key, node.value)
-
-    def clear(self):
+    def clear(self) -> None:
         """
         Clears the hash table
         :return: None
@@ -356,14 +340,14 @@ class HashTable:
         self.size = 0
 
 class CataData:
-    def __init__(self):
+    def __init__(self) -> None:
         self.table = HashTable()
         self.current = HashTable()
 
-    def enter(self, idx, origin, time):
+    def enter(self, idx: str, origin: str, time: int) -> None:
         self.current[idx] = origin, time
 
-    def exit(self, idx, dest, time):
+    def exit(self, idx: str, dest: str, time: int) -> None:
         if idx not in self.current:
             return
         start_station, start_time = self.current[idx]
@@ -377,7 +361,7 @@ class CataData:
         self.table[start_station][dest] = (current_total, trips)
         del self.current[idx]
 
-    def get_average(self, origin, dest):
+    def get_average(self, origin: str, dest: str) -> float:
         if origin not in self.table or dest not in self.table[origin]:
             return 0.0
         total_time, trips = self.table[origin][dest]

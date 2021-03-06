@@ -1,39 +1,75 @@
 import unittest
 import random
-from hashtable import HashTable, HashNode, CataData
+from Project6.hashtable import HashTable, HashNode, CataData
 
 random.seed(331)
 
+
 class TestProject1(unittest.TestCase):
 
-    def test_initialization(self):
-        table = HashTable(capacity=100)
-        assert (table.capacity == 100)
-        assert (table.size == 0)
-        assert (table.table == [None for _ in range(100)])
-
     def test_hash(self):
-        table = HashTable(capacity=16)
+        # (1) Basic with no double hashing
+        table1 = HashTable(capacity=16)
 
-        table.table = [None, None, None,
+        self.assertEqual(4, table1.hash("Ian"))
+        self.assertEqual(2, table1.hash("Max"))
+        self.assertEqual(5, table1.hash("Yash"))
+        self.assertEqual(0, table1.hash("Brandon"))
+
+        # (2) Basic with double hashing - Inserting Mode Only
+        table2 = HashTable(capacity=16)
+
+        table2.table = [None, None, None, None, HashNode("Ian", 150, True),
+                        None, None, None, HashNode("H", 100),
+                        None, None, None, None, None, None, None]
+
+        self.assertEqual(9, table2.hash("Andrew", inserting=True))
+        self.assertEqual(5, table2.hash("Andy", inserting=True))
+        self.assertEqual(15, table2.hash("Lukas", inserting=True))
+
+        # (3) Larger with Inserting and not Inserting
+        table3 = HashTable(capacity=16)
+
+        table3.table = [None, None, None,
                        HashNode('class_ever', 1), HashNode(None, None, True),
                        HashNode(None, None, True), None, None, None,
                        None, HashNode(None, None, True), None,
                        None, None, HashNode('cse331', 100), None]
 
         # Should insert in the first available bin
-        assert (4 == table.hash("is_the", inserting=True))
+        self.assertEqual(4, table3.hash("is_the", inserting=True))
 
         # Should search until the first None/unused bin
-        assert (15 == table.hash("is_the"))
+        self.assertEqual(15, table3.hash("is_the"))
 
         # Should insert in the first available bin
-        assert (5 == table.hash("yash", inserting=True))
+        self.assertEqual(5, table3.hash("yash", inserting=True))
 
         # Should search until the first None/unused bin
-        assert (7 == table.hash("yash"))
+        self.assertEqual(7, table3.hash("yash"))
 
-        assert (3 == table.hash("class_ever"))
+        self.assertEqual(3, table3.hash("class_ever"))
+
+        # (4) Large Comprehensive
+        keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
+                "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
+        vals = [i*10 for i in range(19)]
+
+        table4 = HashTable(capacity=16)
+
+        table4.table = [None, None, HashNode('Max', 0),
+                        None, HashNode('Ian', 10),
+                        HashNode(None, None, True), None, None, None,
+                        None, HashNode(None, None, True), None,
+                        None, None, HashNode(None, None, True), None]
+
+        expected = [2, 2, 4, 4, 9, 9, 8, 8, 8, 8, 0, 0, 8, 8, 7, 7, 6, 6, 15, 15, 3, 3, 15, 15, 14, 7, 9, 9, 1, 1, 9,
+                    9, 0, 0, 5, 8, 15, 15]
+
+        for i, key in enumerate(keys):
+            # inserts every key in inserting mode and normal mode
+            self.assertEqual(expected[2*i], table4.hash(key, inserting=True))
+            self.assertEqual(expected[2*i + 1], table4.hash(key))
 
     def test_setitem(self):
         table = HashTable()
@@ -145,29 +181,9 @@ class TestProject1(unittest.TestCase):
         values = table.values()
         items = table.items()
 
-        kset = set()
-        vset = set()
-        iset = set()
-
-        for i in range(3):
-            kset.add(next(keys, None))
-            vset.add(next(values, None))
-            iset.add(next(items, None))
-
-        assert set(initial_keys) == kset
-        assert set(initial_values) == vset
-        assert set(initial_items) == iset
-
-    def test_setdefault(self):
-        table = HashTable()
-
-        table.setdefault('hey', 10)
-
-        assert table['hey'] == 10
-
-        table['hey'] = 12
-
-        assert table['hey'] == 12
+        assert set(initial_keys) == set(keys)
+        assert set(initial_values) == set(values)
+        assert set(initial_items) == set(items)
 
     def test_clear(self):
         table = HashTable()
