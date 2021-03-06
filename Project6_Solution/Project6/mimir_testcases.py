@@ -71,6 +71,19 @@ class TestProject1(unittest.TestCase):
             self.assertEqual(expected[2*i], table4.hash(key, inserting=True))
             self.assertEqual(expected[2*i + 1], table4.hash(key))
 
+    def test_len(self):
+        # (1) Empty
+        table = HashTable()
+        self.assertEqual(0, len(table))
+
+        # (2) Size = 1
+        table.size = 1
+        self.assertEqual(1, len(table))
+
+        # (3) Size = 5
+        table.size = 5
+        self.assertEqual(5, len(table))
+
     def test_setitem(self):
         # (1) Simple (No Grow)
         table = HashTable()

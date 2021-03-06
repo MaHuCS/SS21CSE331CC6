@@ -339,15 +339,31 @@ class HashTable:
             self.table[i] = None
         self.size = 0
 
+
 class CataData:
     def __init__(self) -> None:
+        """
+        Init for CataData
+        """
         self.table = HashTable()
         self.current = HashTable()
 
     def enter(self, idx: str, origin: str, time: int) -> None:
+        """
+        Enter someone into the system
+        :param idx: person ID
+        :param origin: place getting on
+        :param time: timestamp for getting on
+        """
         self.current[idx] = origin, time
 
     def exit(self, idx: str, dest: str, time: int) -> None:
+        """
+        Exit someone into the system
+        :param idx: person ID
+        :param dest: place getting off
+        :param time: timestamp for getting off
+        """
         if idx not in self.current:
             return
         start_station, start_time = self.current[idx]
@@ -362,6 +378,12 @@ class CataData:
         del self.current[idx]
 
     def get_average(self, origin: str, dest: str) -> float:
+        """
+        Get the average time between two locations
+        :param origin: location of origin
+        :param dest: location of destination
+        :return: float for the average time to get between two places
+        """
         if origin not in self.table or dest not in self.table[origin]:
             return 0.0
         total_time, trips = self.table[origin][dest]
