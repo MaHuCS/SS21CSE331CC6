@@ -71,10 +71,9 @@ class TestProject1(unittest.TestCase):
             self.assertEqual(expected[2 * i], table4.hash(key, inserting=True))
             self.assertEqual(expected[2 * i + 1], table4.hash(key))
 
-    def test_insert_get_delete(self):
-        # This test is just to make sure that the hidden methods do the proper amount of work!
-
-        # (1) Insert
+    def test_insert(self):
+        # This test is just to make sure that the hidden method does the proper amount of work!
+        # Insert Sanity Check
         table = HashTable()
 
         solution = [None, None, None, None, HashNode('is_the', 3005), None, HashNode('cse331', 100), None]
@@ -94,7 +93,9 @@ class TestProject1(unittest.TestCase):
         self.assertEqual(16, table.capacity)
         self.assertEqual(solution, table.table)
 
-        # (2) Get
+    def test_get(self):
+        # This test is just to make sure that the hidden method does the proper amount of work!
+        # Get Sanity Check
         table = HashTable(capacity=8)
 
         solution = [None, None, None, None, HashNode('is_the', 3005), None, HashNode('cse331', 100), None]
@@ -105,7 +106,9 @@ class TestProject1(unittest.TestCase):
         self.assertEqual(HashNode("cse331", 100), table._get('cse331'))
         self.assertIsNone(table._get('cse320'))
 
-        # (3) Delete
+    def test_delete(self):
+        # This test is just to make sure that the hidden method does the proper amount of work!
+        # Delete Sanity Check
         table = HashTable(capacity=16)
 
         pre_solution = [None, None, None, HashNode('class_ever', 1), HashNode('is_the', 3005), None, None, None, None,
