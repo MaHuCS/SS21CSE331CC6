@@ -142,7 +142,6 @@ class HashTable:
 
     def __setitem__(self, key: str, value: T) -> None:
         """
-        DO NOT EDIT
         Allows for the use of the set operator to insert into table
         :param key: string key to insert
         :param value: value to insert
@@ -152,7 +151,6 @@ class HashTable:
 
     def __getitem__(self, key: str) -> T:
         """
-        DO NOT EDIT
         Allows get operator to retrieve a value from the table
         :param key: string key of item to retrieve from table
         :return: value associated with the item
@@ -173,7 +171,6 @@ class HashTable:
 
     def __contains__(self, key: str) -> bool:
         """
-        DO NOT EDIT
         Checks whether a given key exists in the table
         :param item: string key of item to retrieve
         :return: Bool
